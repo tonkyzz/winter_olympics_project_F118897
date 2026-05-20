@@ -1,0 +1,1 @@
+rootProject.name = "store_project_F118897"
