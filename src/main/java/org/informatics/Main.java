@@ -1,15 +1,14 @@
 package org.informatics;
 
-import org.informatics.data.Stock;
+import org.informatics.data.Participant;
+import org.informatics.data.Gender;
 
-import java.math.BigDecimal;
-
-import static org.informatics.data.StockType.FOOD;
+import java.time.LocalDate;
 
 public class Main {
     public static void main(String[] args) {
 
-        Stock s1 = new Stock(222,"Apple", BigDecimal.valueOf(5),FOOD,"10.03.2003", 10, BigDecimal.valueOf(6));
-
+        Participant p1 = new Participant(123, "Anton", "Bulgaria", Gender.Male, LocalDate.of(2003,3,10));
+        System.out.println(p1);
     }
 }
