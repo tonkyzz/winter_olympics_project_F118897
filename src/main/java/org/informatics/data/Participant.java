@@ -1,6 +1,7 @@
 package org.informatics.data;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 
 public class Participant {
@@ -56,6 +57,10 @@ public class Participant {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public int getAge(){
+        return Period.between(dateOfBirth, LocalDate.now()).getYears();
     }
 
     @Override
