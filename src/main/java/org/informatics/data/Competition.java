@@ -53,7 +53,6 @@ public abstract class Competition {
         this.participants.add(participant);
     }
 
-    public abstract void finalResults();
 
     @Override
     public String toString() {
