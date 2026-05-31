@@ -1,6 +1,7 @@
 package org.informatics.service.impl;
 
 import org.informatics.data.*;
+import org.informatics.exceptions.FileServiceException;
 import org.informatics.service.BiatlonService;
 import org.informatics.service.FileService;
 import org.informatics.service.SkiSlalomService;
@@ -12,8 +13,8 @@ import java.util.List;
 
 public class FileServiceImpl implements FileService {
 
-    private SkiSlalomService skiSlalomService;
-    private BiatlonService biatlonService;
+    private final SkiSlalomService skiSlalomService;
+    private final BiatlonService biatlonService;
 
     public FileServiceImpl() {
         this.skiSlalomService = new SkiSlalomServiceImpl();
@@ -22,8 +23,10 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void saveFinalResultsToFile(Olympics olympics, String fileName) {
-        try {
-            PrintWriter writer = new PrintWriter(new FileWriter(fileName));
+        validateOlympics(olympics);
+        validateFileName(fileName);
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
 
             writer.println("Olympics: " + olympics.getName());
             writer.println("======================================");
@@ -34,6 +37,7 @@ public class FileServiceImpl implements FileService {
                 if (competition instanceof SkiSlalom) {
                     SkiSlalom skiSlalom = (SkiSlalom) competition;
                     writeSkiSlalomResults(writer, skiSlalom);
+
                 } else if (competition instanceof Biatlon) {
                     Biatlon biatlon = (Biatlon) competition;
                     writeBiatlonResults(writer, biatlon);
@@ -42,12 +46,13 @@ public class FileServiceImpl implements FileService {
                 writer.println();
             }
 
-            writer.close();
-
             System.out.println("Final results saved successfully to file: " + fileName);
 
         } catch (IOException e) {
-            System.out.println("Error while saving final results to file.");
+            throw new FileServiceException(
+                    "Error while saving final results to file: " + fileName,
+                    e
+            );
         }
     }
 
@@ -57,6 +62,11 @@ public class FileServiceImpl implements FileService {
 
         List<SkiSlalomResultOfParticipant> finalRanking =
                 skiSlalomService.getFinalRanking(skiSlalom);
+
+        if (finalRanking.isEmpty()) {
+            writer.println("No final ranking available.");
+            return;
+        }
 
         for (int i = 0; i < finalRanking.size(); i++) {
             SkiSlalomResultOfParticipant result = finalRanking.get(i);
@@ -78,6 +88,11 @@ public class FileServiceImpl implements FileService {
         List<BiatlonResultOfParticipant> finalRanking =
                 biatlonService.getFinalRanking(biatlon);
 
+        if (finalRanking.isEmpty()) {
+            writer.println("No final ranking available.");
+            return;
+        }
+
         for (int i = 0; i < finalRanking.size(); i++) {
             BiatlonResultOfParticipant result = finalRanking.get(i);
 
@@ -90,6 +105,22 @@ public class FileServiceImpl implements FileService {
                     + " | Penalty: " + biatlonService.calculatePenalty(biatlon, result)
                     + " | Total: " + biatlonService.calculateTotalTime(biatlon, result)
                     + " sec");
+        }
+    }
+
+    private void validateOlympics(Olympics olympics) {
+        if (olympics == null) {
+            throw new FileServiceException("Olympics cannot be null.");
+        }
+
+        if (olympics.getCompetitions() == null) {
+            throw new FileServiceException("Olympics competitions list cannot be null.");
+        }
+    }
+
+    private void validateFileName(String fileName) {
+        if (fileName == null || fileName.isBlank()) {
+            throw new FileServiceException("File name cannot be empty.");
         }
     }
 }

@@ -7,8 +7,8 @@ import java.util.Map;
 
 public class ConsoleApplication {
 
-    private AppContext context;
-    private Map<Integer, MenuAction> actions;
+    private final AppContext context;
+    private final Map<Integer, MenuAction> actions;
 
     public ConsoleApplication() {
         this.context = new AppContext();
@@ -23,19 +23,24 @@ public class ConsoleApplication {
         while (running) {
             printMenu();
 
-            int choice = context.getConsoleInputService().readInt("Choose option: ");
+            try {
+                int choice = context.getConsoleInputService().readInt("Choose option: ");
 
-            if (choice == 0) {
-                running = false;
-                System.out.println("Application stopped.");
-            } else {
-                MenuAction action = actions.get(choice);
-
-                if (action == null) {
-                    System.out.println("Invalid option.");
+                if (choice == 0) {
+                    running = false;
+                    System.out.println("Application stopped.");
                 } else {
-                    action.execute(context);
+                    MenuAction action = actions.get(choice);
+
+                    if (action == null) {
+                        System.out.println("Invalid option.");
+                    } else {
+                        action.execute(context);
+                    }
                 }
+
+            } catch (RuntimeException e) {
+                System.out.println("Error: " + e.getMessage());
             }
 
             System.out.println();

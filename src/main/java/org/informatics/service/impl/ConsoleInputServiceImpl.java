@@ -2,15 +2,17 @@ package org.informatics.service.impl;
 
 import org.informatics.data.Gender;
 import org.informatics.data.Participant;
+import org.informatics.exceptions.InvalidConsoleInputException;
 import org.informatics.service.ConsoleInputService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class ConsoleInputServiceImpl implements ConsoleInputService {
 
-    private Scanner scanner;
+    private final Scanner scanner;
 
     public ConsoleInputServiceImpl() {
         this.scanner = new Scanner(System.in);
@@ -25,7 +27,14 @@ public class ConsoleInputServiceImpl implements ConsoleInputService {
     @Override
     public int readInt(String message) {
         System.out.print(message);
-        return Integer.parseInt(scanner.nextLine());
+
+        String input = scanner.nextLine();
+
+        try {
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            throw new InvalidConsoleInputException("Invalid number format. Please enter an integer.");
+        }
     }
 
     @Override
@@ -33,19 +42,26 @@ public class ConsoleInputServiceImpl implements ConsoleInputService {
         System.out.print(message);
 
         String input = scanner.nextLine();
-
-        // Позволява и 55.321, и 55,321
         input = input.replace(",", ".");
 
-        return new BigDecimal(input);
+        try {
+            return new BigDecimal(input);
+        } catch (NumberFormatException e) {
+            throw new InvalidConsoleInputException("Invalid decimal number format.");
+        }
     }
 
     @Override
     public LocalDate readDate(String message) {
         System.out.print(message + " YYYY-MM-DD: ");
+
         String input = scanner.nextLine();
 
-        return LocalDate.parse(input);
+        try {
+            return LocalDate.parse(input);
+        } catch (DateTimeParseException e) {
+            throw new InvalidConsoleInputException("Invalid date format. Use YYYY-MM-DD.");
+        }
     }
 
     @Override
@@ -62,7 +78,7 @@ public class ConsoleInputServiceImpl implements ConsoleInputService {
             return Gender.Female;
         }
 
-        throw new IllegalArgumentException("Invalid gender.");
+        throw new InvalidConsoleInputException("Invalid gender. Use Male/Female.");
     }
 
     @Override

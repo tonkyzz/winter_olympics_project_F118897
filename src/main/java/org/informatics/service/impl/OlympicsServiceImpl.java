@@ -1,6 +1,7 @@
 package org.informatics.service.impl;
 
 import org.informatics.data.*;
+import org.informatics.exceptions.InvalidOlympicsException;
 import org.informatics.service.BiatlonService;
 import org.informatics.service.OlympicsService;
 import org.informatics.service.SkiSlalomService;
@@ -13,8 +14,8 @@ import java.util.Map;
 
 public class OlympicsServiceImpl implements OlympicsService {
 
-    private SkiSlalomService skiSlalomService;
-    private BiatlonService biatlonService;
+    private final SkiSlalomService skiSlalomService;
+    private final BiatlonService biatlonService;
 
     public OlympicsServiceImpl() {
         this.skiSlalomService = new SkiSlalomServiceImpl();
@@ -28,6 +29,19 @@ public class OlympicsServiceImpl implements OlympicsService {
                                      int minimumAge,
                                      List<Participant> participants,
                                      int limitForSecondMansh) {
+
+        validateOlympics(olympics);
+        validateCompetitionInput(name, gender, minimumAge, participants);
+
+        if (limitForSecondMansh <= 0) {
+            throw new InvalidOlympicsException("Limit for second mansh must be greater than 0.");
+        }
+
+        if (limitForSecondMansh > participants.size()) {
+            throw new InvalidOlympicsException(
+                    "Limit for second mansh cannot be greater than participants count."
+            );
+        }
 
         SkiSlalom skiSlalom = new SkiSlalom(
                 name,
@@ -52,6 +66,25 @@ public class OlympicsServiceImpl implements OlympicsService {
                                  int shootingsCount,
                                  BigDecimal penaltyForOneMiss) {
 
+        validateOlympics(olympics);
+        validateCompetitionInput(name, gender, minimumAge, participants);
+
+        if (lapsCount <= 0) {
+            throw new InvalidOlympicsException("Laps count must be greater than 0.");
+        }
+
+        if (shootingsCount <= 0) {
+            throw new InvalidOlympicsException("Shootings count must be greater than 0.");
+        }
+
+        if (penaltyForOneMiss == null) {
+            throw new InvalidOlympicsException("Penalty for one miss cannot be null.");
+        }
+
+        if (penaltyForOneMiss.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidOlympicsException("Penalty for one miss must be greater than 0.");
+        }
+
         Biatlon biatlon = new Biatlon(
                 name,
                 gender,
@@ -69,6 +102,8 @@ public class OlympicsServiceImpl implements OlympicsService {
 
     @Override
     public void printAllFinalResults(Olympics olympics) {
+        validateOlympics(olympics);
+
         System.out.println("Olympics: " + olympics.getName());
         System.out.println();
 
@@ -78,9 +113,8 @@ public class OlympicsServiceImpl implements OlympicsService {
                 SkiSlalom skiSlalom = (SkiSlalom) competition;
                 skiSlalomService.printFinalResults(skiSlalom);
                 System.out.println();
-            }
 
-            if (competition instanceof Biatlon) {
+            } else if (competition instanceof Biatlon) {
                 Biatlon biatlon = (Biatlon) competition;
                 biatlonService.printFinalResults(biatlon);
                 System.out.println();
@@ -90,20 +124,23 @@ public class OlympicsServiceImpl implements OlympicsService {
 
     @Override
     public List<OlympicMedal> getAllMedalists(Olympics olympics) {
+        validateOlympics(olympics);
+
         List<OlympicMedal> medalists = new ArrayList<>();
 
         for (Competition competition : olympics.getCompetitions()) {
 
             if (competition instanceof SkiSlalom) {
                 SkiSlalom skiSlalom = (SkiSlalom) competition;
+
                 List<SkiSlalomResultOfParticipant> ranking =
                         skiSlalomService.getFinalRanking(skiSlalom);
 
                 addMedalistsFromSkiSlalom(medalists, skiSlalom, ranking);
-            }
 
-            if (competition instanceof Biatlon) {
+            } else if (competition instanceof Biatlon) {
                 Biatlon biatlon = (Biatlon) competition;
+
                 List<BiatlonResultOfParticipant> ranking =
                         biatlonService.getFinalRanking(biatlon);
 
@@ -117,6 +154,10 @@ public class OlympicsServiceImpl implements OlympicsService {
     private void addMedalistsFromSkiSlalom(List<OlympicMedal> medalists,
                                            SkiSlalom skiSlalom,
                                            List<SkiSlalomResultOfParticipant> ranking) {
+
+        if (ranking == null) {
+            throw new InvalidOlympicsException("Ski slalom ranking cannot be null.");
+        }
 
         int count = Math.min(3, ranking.size());
 
@@ -137,6 +178,10 @@ public class OlympicsServiceImpl implements OlympicsService {
     private void addMedalistsFromBiatlon(List<OlympicMedal> medalists,
                                          Biatlon biatlon,
                                          List<BiatlonResultOfParticipant> ranking) {
+
+        if (ranking == null) {
+            throw new InvalidOlympicsException("Biatlon ranking cannot be null.");
+        }
 
         int count = Math.min(3, ranking.size());
 
@@ -167,11 +212,13 @@ public class OlympicsServiceImpl implements OlympicsService {
             return MedalType.BRONZE;
         }
 
-        return null;
+        throw new InvalidOlympicsException("Invalid medal place.");
     }
 
     @Override
     public Map<String, Integer> getMedalsByCountry(Olympics olympics) {
+        validateOlympics(olympics);
+
         Map<String, Integer> medalsByCountry = new HashMap<>();
         List<OlympicMedal> medalists = getAllMedalists(olympics);
 
@@ -191,9 +238,16 @@ public class OlympicsServiceImpl implements OlympicsService {
 
     @Override
     public void printMedalsByCountry(Olympics olympics) {
+        validateOlympics(olympics);
+
         Map<String, Integer> medalsByCountry = getMedalsByCountry(olympics);
 
         System.out.println("Medals by country:");
+
+        if (medalsByCountry.isEmpty()) {
+            System.out.println("No medals yet.");
+            return;
+        }
 
         for (String country : medalsByCountry.keySet()) {
             System.out.println(country + " - " + medalsByCountry.get(country));
@@ -202,6 +256,8 @@ public class OlympicsServiceImpl implements OlympicsService {
 
     @Override
     public double getAverageAgeOfParticipants(Olympics olympics) {
+        validateOlympics(olympics);
+
         List<Participant> participants = getAllUniqueParticipants(olympics);
 
         if (participants.isEmpty()) {
@@ -219,6 +275,8 @@ public class OlympicsServiceImpl implements OlympicsService {
 
     @Override
     public Participant getYoungestMedalist(Olympics olympics) {
+        validateOlympics(olympics);
+
         List<OlympicMedal> medals = getAllMedalists(olympics);
 
         if (medals.isEmpty()) {
@@ -239,6 +297,8 @@ public class OlympicsServiceImpl implements OlympicsService {
     }
 
     private List<Participant> getAllUniqueParticipants(Olympics olympics) {
+        validateOlympics(olympics);
+
         List<Participant> uniqueParticipants = new ArrayList<>();
 
         for (Competition competition : olympics.getCompetitions()) {
@@ -262,5 +322,41 @@ public class OlympicsServiceImpl implements OlympicsService {
         }
 
         return false;
+    }
+
+    private void validateOlympics(Olympics olympics) {
+        if (olympics == null) {
+            throw new InvalidOlympicsException("Olympics cannot be null.");
+        }
+
+        if (olympics.getName() == null || olympics.getName().isBlank()) {
+            throw new InvalidOlympicsException("Olympics name cannot be empty.");
+        }
+
+        if (olympics.getCompetitions() == null) {
+            throw new InvalidOlympicsException("Olympics competitions list cannot be null.");
+        }
+    }
+
+    private void validateCompetitionInput(String name,
+                                          Gender gender,
+                                          int minimumAge,
+                                          List<Participant> participants) {
+
+        if (name == null || name.isBlank()) {
+            throw new InvalidOlympicsException("Competition name cannot be empty.");
+        }
+
+        if (gender == null) {
+            throw new InvalidOlympicsException("Competition gender cannot be null.");
+        }
+
+        if (minimumAge <= 0) {
+            throw new InvalidOlympicsException("Minimum age must be greater than 0.");
+        }
+
+        if (participants == null || participants.isEmpty()) {
+            throw new InvalidOlympicsException("Competition must have participants.");
+        }
     }
 }

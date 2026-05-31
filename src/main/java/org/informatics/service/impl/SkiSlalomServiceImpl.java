@@ -1,8 +1,11 @@
 package org.informatics.service.impl;
 
+import org.informatics.data.Participant;
 import org.informatics.data.SkiSlalom;
 import org.informatics.data.SkiSlalomResultOfParticipant;
 import org.informatics.service.SkiSlalomService;
+
+import org.informatics.exceptions.InvalidSkiSlalomException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +16,10 @@ public class SkiSlalomServiceImpl implements SkiSlalomService {
 
     @Override
     public List<SkiSlalomResultOfParticipant> getFirstManshRanking(SkiSlalom skiSlalom) {
+
+        validateSkiSlalom(skiSlalom);
+        validateAllResults(skiSlalom);
+
         List<SkiSlalomResultOfParticipant> ranking = new ArrayList<>();
 
         for (SkiSlalomResultOfParticipant result : skiSlalom.getResults()) {
@@ -149,5 +156,68 @@ public class SkiSlalomServiceImpl implements SkiSlalomService {
         public int compare(SkiSlalomResultOfParticipant r1, SkiSlalomResultOfParticipant r2) {
             return r1.getTotal().compareTo(r2.getTotal());
         }
+    }
+
+    // Валидиране на входа ----------------------------------------------------------------------------------------
+    private void validateSkiSlalom(SkiSlalom skiSlalom) {
+        if (skiSlalom == null) {
+            throw new InvalidSkiSlalomException("Ski slalom cannot be null.");
+        }
+
+        if (skiSlalom.getParticipants() == null || skiSlalom.getParticipants().isEmpty()) {
+            throw new InvalidSkiSlalomException("Ski slalom must have participants.");
+        }
+
+        if (skiSlalom.getResults() == null) {
+            throw new InvalidSkiSlalomException("Ski slalom results cannot be null.");
+        }
+
+        if (skiSlalom.getLimitForSecondMansh() <= 0) {
+            throw new InvalidSkiSlalomException("Limit for second mansh must be greater than 0.");
+        }
+
+        if (skiSlalom.getLimitForSecondMansh() > skiSlalom.getParticipants().size()) {
+            throw new InvalidSkiSlalomException(
+                    "Limit for second mansh cannot be greater than participants count."
+            );
+        }
+    }
+
+    private void validateAllResults(SkiSlalom skiSlalom) {
+        for (SkiSlalomResultOfParticipant result : skiSlalom.getResults()) {
+            validateResult(skiSlalom, result);
+        }
+    }
+
+    private void validateResult(SkiSlalom skiSlalom, SkiSlalomResultOfParticipant result) {
+        if (result == null) {
+            throw new InvalidSkiSlalomException("Ski slalom result cannot be null.");
+        }
+
+        if (result.getParticipant() == null) {
+            throw new InvalidSkiSlalomException("Result participant cannot be null.");
+        }
+
+        if (!containsParticipant(skiSlalom, result.getParticipant())) {
+            throw new InvalidSkiSlalomException("Participant is not registered in this ski slalom.");
+        }
+
+        if (result.getParticipant().getGender() != skiSlalom.getGender()) {
+            throw new InvalidSkiSlalomException("Participant gender does not match ski slalom gender.");
+        }
+
+        if (result.getParticipant().getAge() < skiSlalom.getMinimumAge()) {
+            throw new InvalidSkiSlalomException("Participant is too young for this ski slalom.");
+        }
+    }
+
+    private boolean containsParticipant(SkiSlalom skiSlalom, Participant participant) {
+        for (Participant current : skiSlalom.getParticipants()) {
+            if (current.getId() == participant.getId()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

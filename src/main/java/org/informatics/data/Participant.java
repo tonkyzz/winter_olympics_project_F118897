@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 
+import org.informatics.exceptions.InvalidParticipantException;
+
 public class Participant implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -22,6 +24,12 @@ public class Participant implements Serializable {
                        Gender gender,
                        LocalDate dateOfBirth)
     {
+        validateId(id);
+        validateName(name);
+        validateCountry(country);
+        validateGender(gender);
+        validateDateOfBirth(dateOfBirth);
+
         this.id = id;
         this.name = name;
         this.country = country;
@@ -51,18 +59,22 @@ public class Participant implements Serializable {
 
     // Setter-и -------------------------------------------------------------------------------------------------------
     public void setName(String name) {
+        validateName(name);
         this.name = name;
     }
 
     public void setCountry(String country) {
+        validateCountry(country);
         this.country = country;
     }
 
     public void setGender(Gender gender) {
+        validateGender(gender);
         this.gender = gender;
     }
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
+        validateDateOfBirth(dateOfBirth);
         this.dateOfBirth = dateOfBirth;
     }
 
@@ -71,6 +83,41 @@ public class Participant implements Serializable {
         return Period.between(dateOfBirth, LocalDate.now()).getYears();
     }
 
+
+    // Проверки -------------------------------------------------------------------------------------------------------
+    private void validateId(long id) {
+        if (id <= 0) {
+            throw new InvalidParticipantException("Participant id must be positive.");
+        }
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidParticipantException("Participant name cannot be empty.");
+        }
+    }
+
+    private void validateCountry(String country) {
+        if (country == null || country.isBlank()) {
+            throw new InvalidParticipantException("Participant country cannot be empty.");
+        }
+    }
+
+    private void validateGender(Gender gender) {
+        if (gender == null) {
+            throw new InvalidParticipantException("Participant gender cannot be null.");
+        }
+    }
+
+    private void validateDateOfBirth(LocalDate dateOfBirth) {
+        if (dateOfBirth == null) {
+            throw new InvalidParticipantException("Date of birth cannot be null.");
+        }
+
+        if (dateOfBirth.isAfter(LocalDate.now())) {
+            throw new InvalidParticipantException("Date of birth cannot be in the future.");
+        }
+    }
 
 
     @Override

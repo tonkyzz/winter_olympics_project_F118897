@@ -1,5 +1,7 @@
 package org.informatics.data;
 
+import org.informatics.exceptions.InvalidSkiSlalomResultException;
+
 import java.math.BigDecimal;
 
 public class SkiSlalomResultOfParticipant {
@@ -13,38 +15,57 @@ public class SkiSlalomResultOfParticipant {
         this.participant = participant;
     }//Понеже първо се добавя само първи манш, после ако се класира - втори манш
 
-    public SkiSlalomResultOfParticipant(Participant participant, BigDecimal firstManshTime, BigDecimal secondManshTime) {
+    public SkiSlalomResultOfParticipant(Participant participant,
+                                        BigDecimal firstManshTime,
+                                        BigDecimal secondManshTime)
+    {
         this.participant = participant;
+        validateManshTime(firstManshTime);
         this.firstManshTime = firstManshTime;
+        validateManshTime(secondManshTime);
         this.secondManshTime = secondManshTime;
     }
 
-    // Гетъри и сетъри ------------------------------------------------------------------------------------------------
+    // Гетъри ------------------------------------------------------------------------------------------------
     public Participant getParticipant() {
         return participant;
-    }
-
-    public void setParticipant(Participant participant) {
-        this.participant = participant;
     }
 
     public BigDecimal getFirstManshTime() {
         return firstManshTime;
     }
 
-    public void setFirstManshTime(BigDecimal firstManshTime) {
-        this.firstManshTime = firstManshTime;
-    }
-
     public BigDecimal getSecondManshTime() {
         return secondManshTime;
     }
 
+    // Сетъри -------------------------------------------------------------------------------------------------
+    public void setParticipant(Participant participant) {
+        this.participant = participant;
+    }
+
+    public void setFirstManshTime(BigDecimal firstManshTime) {
+        validateManshTime(firstManshTime);
+        this.firstManshTime = firstManshTime;
+    }
+
     public void setSecondManshTime(BigDecimal secondManshTime) {
+        validateManshTime(secondManshTime);
         this.secondManshTime = secondManshTime;
     }
 
+    // Валидиране на време за манш -----------------------------------------------------------------------------
+    private void validateManshTime(BigDecimal manshTime) {
+        if (manshTime == null) {
+            throw new InvalidSkiSlalomResultException("Mansh time cannot be null.");
+        }
+        if(manshTime.compareTo(BigDecimal.ZERO) <= 0){
+            throw new InvalidSkiSlalomResultException("Mansh time cannot be negative.");
+        }
+    }
 
+
+    // Помощни функции -------------------------------------------------------------------------------------------
     public boolean hasFinished(){
         return firstManshTime != null && secondManshTime != null;
     }
