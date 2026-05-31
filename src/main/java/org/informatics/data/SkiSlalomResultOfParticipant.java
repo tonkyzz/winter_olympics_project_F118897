@@ -49,9 +49,13 @@ public class SkiSlalomResultOfParticipant {
         return firstManshTime != null && secondManshTime != null;
     }
 
-    public BigDecimal getTotal(){
+    public BigDecimal getTotal() {
+        if (!hasFinished()) {
+            throw new IllegalStateException("Participant has not finished both manshes.");
+        }
+
         return firstManshTime.add(secondManshTime);
-    }//Ако не е приключил, да хвърли изключение
+    }
 
     @Override
     public String toString() {

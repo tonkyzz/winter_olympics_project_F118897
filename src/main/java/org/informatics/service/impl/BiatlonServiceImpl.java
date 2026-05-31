@@ -1,7 +1,8 @@
-package org.informatics.service;
+package org.informatics.service.impl;
 
 import org.informatics.data.Biatlon;
 import org.informatics.data.BiatlonResultOfParticipant;
+import org.informatics.service.BiatlonService;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

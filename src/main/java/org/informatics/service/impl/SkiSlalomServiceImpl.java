@@ -1,7 +1,8 @@
-package org.informatics.service;
+package org.informatics.service.impl;
 
 import org.informatics.data.SkiSlalom;
 import org.informatics.data.SkiSlalomResultOfParticipant;
+import org.informatics.service.SkiSlalomService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -92,6 +93,7 @@ public class SkiSlalomServiceImpl implements SkiSlalomService {
         }
     }
 
+    @Override
     public void printFirstManshRanking(SkiSlalom skiSlalom) {
         List<SkiSlalomResultOfParticipant> ranking = getFirstManshRanking(skiSlalom);
 
@@ -108,6 +110,7 @@ public class SkiSlalomServiceImpl implements SkiSlalomService {
         }
     }
 
+    @Override
     public void printQualifiedForSecondMansh(SkiSlalom skiSlalom) {
         List<SkiSlalomResultOfParticipant> qualified = getQualifiedForSecondMansh(skiSlalom);
 

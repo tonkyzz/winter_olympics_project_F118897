@@ -1,8 +1,12 @@
 package org.informatics.data;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Competition {
+public abstract class Competition implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String name;
     private Gender gender;
@@ -14,7 +18,12 @@ public abstract class Competition {
         this.name = name;
         this.gender = gender;
         this.minimumAge = minimumAge;
-        this.participants = participants;
+
+        if (participants == null) {
+            this.participants = new ArrayList<>();
+        } else {
+            this.participants = participants;
+        }
     }
 
     public String getName() {

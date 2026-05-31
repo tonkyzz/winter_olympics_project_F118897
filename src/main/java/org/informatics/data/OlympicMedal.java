@@ -5,9 +5,9 @@ public class OlympicMedal {
     private Participant participant;
     private String competitionName;
     private int place;
-    private String medalType;
+    private MedalType medalType;
 
-    public OlympicMedal(Participant participant, String competitionName, int place, String medalType) {
+    public OlympicMedal(Participant participant, String competitionName, int place, MedalType medalType) {
         this.participant = participant;
         this.competitionName = competitionName;
         this.place = place;
@@ -38,11 +38,11 @@ public class OlympicMedal {
         this.place = place;
     }
 
-    public String getMedalType() {
+    public MedalType getMedalType() {
         return medalType;
     }
 
-    public void setMedalType(String medalType) {
+    public void setMedalType(MedalType medalType) {
         this.medalType = medalType;
     }
 
