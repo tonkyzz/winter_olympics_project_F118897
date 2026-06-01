@@ -44,8 +44,8 @@ public class Olympics {
 
     // Валидиране на вход ------------------------------------------------------------------------------------------
     private void validateName(String name) {
-        if (name == null) {
-            throw new InvalidOlympicsException("Name cannot be null");
+        if (name == null || name.isBlank()) {
+            throw new InvalidOlympicsException("Name cannot be empty.");
         }
     }
 

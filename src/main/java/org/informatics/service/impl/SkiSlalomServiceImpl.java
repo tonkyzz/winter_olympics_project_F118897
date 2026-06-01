@@ -14,6 +14,7 @@ import java.util.List;
 
 public class SkiSlalomServiceImpl implements SkiSlalomService {
 
+    // Сортиране на класирането от първи манш -------------------------------------------------------------------
     @Override
     public List<SkiSlalomResultOfParticipant> getFirstManshRanking(SkiSlalom skiSlalom) {
 
@@ -28,11 +29,12 @@ public class SkiSlalomServiceImpl implements SkiSlalomService {
             }
         }
 
-        Collections.sort(ranking, new FirstManshComparator());
+        ranking.sort(new FirstManshComparator());
 
         return ranking;
     }
 
+    // Създаване на списък с класираните ----------------------------------------------------------------------
     @Override
     public List<SkiSlalomResultOfParticipant> getQualifiedForSecondMansh(SkiSlalom skiSlalom) {
         List<SkiSlalomResultOfParticipant> firstManshRanking = getFirstManshRanking(skiSlalom);
@@ -50,22 +52,7 @@ public class SkiSlalomServiceImpl implements SkiSlalomService {
         return qualified;
     }
 
-    @Override
-    public List<SkiSlalomResultOfParticipant> getSecondManshRanking(SkiSlalom skiSlalom) {
-        List<SkiSlalomResultOfParticipant> qualified = getQualifiedForSecondMansh(skiSlalom);
-        List<SkiSlalomResultOfParticipant> ranking = new ArrayList<>();
-
-        for (SkiSlalomResultOfParticipant result : qualified) {
-            if (result.getSecondManshTime() != null) {
-                ranking.add(result);
-            }
-        }
-
-        Collections.sort(ranking, new SecondManshComparator());
-
-        return ranking;
-    }
-
+    // Сортиране на финалното класиране -------------------------------------------------------------------------
     @Override
     public List<SkiSlalomResultOfParticipant> getFinalRanking(SkiSlalom skiSlalom) {
         List<SkiSlalomResultOfParticipant> qualified = getQualifiedForSecondMansh(skiSlalom);
@@ -77,11 +64,13 @@ public class SkiSlalomServiceImpl implements SkiSlalomService {
             }
         }
 
-        Collections.sort(ranking, new TotalTimeComparator());
+        ranking.sort(new TotalTimeComparator());
 
         return ranking;
     }
 
+
+    // Принтиране на финалните резултати ---------------------------------------------------------------------
     @Override
     public void printFinalResults(SkiSlalom skiSlalom) {
         List<SkiSlalomResultOfParticipant> finalRanking = getFinalRanking(skiSlalom);
@@ -100,53 +89,13 @@ public class SkiSlalomServiceImpl implements SkiSlalomService {
         }
     }
 
-    @Override
-    public void printFirstManshRanking(SkiSlalom skiSlalom) {
-        List<SkiSlalomResultOfParticipant> ranking = getFirstManshRanking(skiSlalom);
 
-        System.out.println("First mansh ranking for " + skiSlalom.getName() + ":");
-
-        for (int i = 0; i < ranking.size(); i++) {
-            SkiSlalomResultOfParticipant result = ranking.get(i);
-
-            System.out.println((i + 1) + ". "
-                    + result.getParticipant().getName()
-                    + " - "
-                    + result.getFirstManshTime()
-                    + " sec");
-        }
-    }
-
-    @Override
-    public void printQualifiedForSecondMansh(SkiSlalom skiSlalom) {
-        List<SkiSlalomResultOfParticipant> qualified = getQualifiedForSecondMansh(skiSlalom);
-
-        System.out.println("Qualified for second mansh for " + skiSlalom.getName() + ":");
-
-        for (int i = 0; i < qualified.size(); i++) {
-            SkiSlalomResultOfParticipant result = qualified.get(i);
-
-            System.out.println((i + 1) + ". "
-                    + result.getParticipant().getName()
-                    + " - "
-                    + result.getFirstManshTime()
-                    + " sec");
-        }
-    }
-
+    // Сравняване на резултатите -------------------------------------------------------------------------------
     private class FirstManshComparator implements Comparator<SkiSlalomResultOfParticipant> {
 
         @Override
         public int compare(SkiSlalomResultOfParticipant r1, SkiSlalomResultOfParticipant r2) {
             return r1.getFirstManshTime().compareTo(r2.getFirstManshTime());
-        }
-    }
-
-    private class SecondManshComparator implements Comparator<SkiSlalomResultOfParticipant> {
-
-        @Override
-        public int compare(SkiSlalomResultOfParticipant r1, SkiSlalomResultOfParticipant r2) {
-            return r1.getSecondManshTime().compareTo(r2.getSecondManshTime());
         }
     }
 

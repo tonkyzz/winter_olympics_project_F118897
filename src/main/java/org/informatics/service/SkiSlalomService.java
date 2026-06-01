@@ -10,10 +10,4 @@ public interface SkiSlalomService extends ResultProcessingService<SkiSlalom, Ski
     List<SkiSlalomResultOfParticipant> getFirstManshRanking(SkiSlalom skiSlalom);
 
     List<SkiSlalomResultOfParticipant> getQualifiedForSecondMansh(SkiSlalom skiSlalom);
-
-    List<SkiSlalomResultOfParticipant> getSecondManshRanking(SkiSlalom skiSlalom);
-
-    void printFirstManshRanking(SkiSlalom skiSlalom);
-
-    void printQualifiedForSecondMansh(SkiSlalom skiSlalom);
 }

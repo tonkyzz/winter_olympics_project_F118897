@@ -13,8 +13,7 @@ public class NewOlympicsAction implements MenuAction {
 
     @Override
     public void execute(AppContext context) {
-        String name = context.getConsoleInputService()
-                .readString("Enter Olympics name: ");
+        String name = context.getConsoleInputService().readString("Enter Olympics name: ");
 
         Olympics olympics = new Olympics(name);
 
