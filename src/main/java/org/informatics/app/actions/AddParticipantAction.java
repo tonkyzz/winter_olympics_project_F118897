@@ -20,8 +20,11 @@ public class AddParticipantAction implements MenuAction {
 
         Participant participant = context.getConsoleInputService().readParticipant();
 
-        context.getParticipants().add(participant);
+        context.addParticipant(participant);
 
-        System.out.println("Participant added: " + participant.getId() + participant.getName());
+        System.out.println("Participant added: "
+                + participant.getId()
+                + " "
+                + participant.getName());
     }
 }

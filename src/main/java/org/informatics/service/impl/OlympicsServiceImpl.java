@@ -109,13 +109,11 @@ public class OlympicsServiceImpl implements OlympicsService {
 
         for (Competition competition : olympics.getCompetitions()) {
 
-            if (competition instanceof SkiSlalom) {
-                SkiSlalom skiSlalom = (SkiSlalom) competition;
+            if (competition instanceof SkiSlalom skiSlalom) {
                 skiSlalomService.printFinalResults(skiSlalom);
                 System.out.println();
 
-            } else if (competition instanceof Biatlon) {
-                Biatlon biatlon = (Biatlon) competition;
+            } else if (competition instanceof Biatlon biatlon) {
                 biatlonService.printFinalResults(biatlon);
                 System.out.println();
             }
@@ -130,16 +128,14 @@ public class OlympicsServiceImpl implements OlympicsService {
 
         for (Competition competition : olympics.getCompetitions()) {
 
-            if (competition instanceof SkiSlalom) {
-                SkiSlalom skiSlalom = (SkiSlalom) competition;
+            if (competition instanceof SkiSlalom skiSlalom) {
 
                 List<SkiSlalomResultOfParticipant> ranking =
                         skiSlalomService.getFinalRanking(skiSlalom);
 
                 addMedalistsFromSkiSlalom(medalists, skiSlalom, ranking);
 
-            } else if (competition instanceof Biatlon) {
-                Biatlon biatlon = (Biatlon) competition;
+            } else if (competition instanceof Biatlon biatlon) {
 
                 List<BiatlonResultOfParticipant> ranking =
                         biatlonService.getFinalRanking(biatlon);
@@ -283,7 +279,7 @@ public class OlympicsServiceImpl implements OlympicsService {
             return null;
         }
 
-        Participant youngest = medals.get(0).getParticipant();
+        Participant youngest = medals.getFirst().getParticipant();
 
         for (OlympicMedal medal : medals) {
             Participant participant = medal.getParticipant();

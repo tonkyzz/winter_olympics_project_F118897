@@ -1,5 +1,6 @@
 package org.informatics.data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
@@ -9,6 +10,7 @@ import org.informatics.exceptions.InvalidParticipantException;
 
 public class Participant implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final long id;

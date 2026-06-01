@@ -2,12 +2,14 @@ package org.informatics.data;
 
 import org.informatics.exceptions.InvalidCompetitionException;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Competition implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String name;

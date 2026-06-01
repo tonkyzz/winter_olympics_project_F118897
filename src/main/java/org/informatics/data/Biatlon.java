@@ -2,6 +2,7 @@ package org.informatics.data;
 
 import org.informatics.exceptions.InvalidBiatlonException;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 
 public class Biatlon extends Competition implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private int lapsCount;

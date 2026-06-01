@@ -68,10 +68,6 @@ public class AppContext {
         return skiSlalomService;
     }
 
-    public BiatlonService getBiatlonService() {
-        return biatlonService;
-    }
-
     public FileService getFileService() {
         return fileService;
     }

@@ -34,12 +34,10 @@ public class FileServiceImpl implements FileService {
 
             for (Competition competition : olympics.getCompetitions()) {
 
-                if (competition instanceof SkiSlalom) {
-                    SkiSlalom skiSlalom = (SkiSlalom) competition;
+                if (competition instanceof SkiSlalom skiSlalom) {
                     writeSkiSlalomResults(writer, skiSlalom);
 
-                } else if (competition instanceof Biatlon) {
-                    Biatlon biatlon = (Biatlon) competition;
+                } else if (competition instanceof Biatlon biatlon) {
                     writeBiatlonResults(writer, biatlon);
                 }
 

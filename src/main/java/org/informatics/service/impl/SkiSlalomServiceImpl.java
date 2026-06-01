@@ -8,7 +8,6 @@ import org.informatics.service.SkiSlalomService;
 import org.informatics.exceptions.InvalidSkiSlalomException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
